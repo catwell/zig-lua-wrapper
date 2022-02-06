@@ -1,0 +1,6 @@
+[submodule "luasocket"]
+	path = luasocket
+	url = git@github.com:diegonehab/luasocket.git
+[submodule "luacc"]
+	path = luacc
+	url = git@github.com:mihacooper/luacc.git

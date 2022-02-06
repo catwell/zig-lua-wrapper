@@ -13,10 +13,15 @@ pub fn build(b: *std.build.Builder) void {
     // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall.
     const mode = b.standardReleaseOptions();
     const exe = b.addExecutable("wrapper", "wrapper.zig");
+
+    const lua_src_dir = "lua-5.3.4/src";
+    const luasocket_src_dir = "luasocket/src";
+
     exe.setTarget(target);
     exe.setBuildMode(mode);
     exe.linkLibC();
-    exe.addIncludeDir("lua-5.3.4/src");
+    exe.addIncludeDir(lua_src_dir);
+    exe.addIncludeDir(luasocket_src_dir);
 
     const lua_c_files = [_][]const u8{
         "lapi.c",
@@ -54,23 +59,42 @@ pub fn build(b: *std.build.Builder) void {
         "lzio.c",
     };
 
-    if(target.os_tag == std.Target.Os.Tag.windows) {
-        const c_flags = [_][]const u8{
-            "-std=c99",
-            "-O2",
-            "-DLUA_USE_WINDOWS"
-        };
+    const luasocket_c_files = [_][]const u8{
+        "auxiliar.c",
+        "buffer.c",
+        "compat.c",
+        "except.c",
+        "inet.c",
+        "io.c",
+        "luasocket.c",
+        "mime.c",
+        "options.c",
+        "select.c",
+        "serial.c",
+        "tcp.c",
+        "timeout.c",
+        "udp.c",
+        "unix.c",
+        "unixdgram.c",
+        "unixstream.c",
+        "usocket.c",
+    };
+
+    if (target.os_tag == std.Target.Os.Tag.windows) {
+        const c_flags = [_][]const u8{ "-std=c99", "-O2", "-DLUA_USE_WINDOWS" };
         inline for (lua_c_files) |c_file| {
-            exe.addCSourceFile("lua-5.3.4/src/" ++ c_file, &c_flags);
+            exe.addCSourceFile(lua_src_dir ++ "/" ++ c_file, &c_flags);
         }
     } else {
         const c_flags = [_][]const u8{
-            "-std=c99",
             "-O2",
             "-DLUA_USE_POSIX",
         };
         inline for (lua_c_files) |c_file| {
-            exe.addCSourceFile("lua-5.3.4/src/" ++ c_file, &c_flags);
+            exe.addCSourceFile(lua_src_dir ++ "/" ++ c_file, &c_flags);
+        }
+        inline for (luasocket_c_files) |c_file| {
+            exe.addCSourceFile(luasocket_src_dir ++ "/" ++ c_file, &c_flags);
         }
     }
 

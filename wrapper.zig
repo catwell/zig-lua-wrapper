@@ -5,11 +5,21 @@ const lua = @cImport({
     @cInclude("lua.h");
     @cInclude("lualib.h");
     @cInclude("lauxlib.h");
+    @cInclude("luasocket.h");
+    @cInclude("mime.h");
 });
 
 pub fn main() anyerror!void {
     var s = lua.luaL_newstate();
     lua.luaL_openlibs(s);
+
+    _ = lua.luaL_getsubtable(s, lua.LUA_REGISTRYINDEX, "_PRELOAD");
+    lua.lua_pushcfunction(s, lua.luaopen_socket_core);
+    lua.lua_setfield(s, -2, "socket.core");
+    lua.lua_pushcfunction(s, lua.luaopen_mime_core);
+    lua.lua_setfield(s, -2, "mime.core");
+    lua.lua_pop(s, 1);
+
     const load_status = lua.luaL_loadbufferx(s, LUA_BYTECODE, LUA_BYTECODE.len, "main.lua", "bt");
     if (load_status != 0) {
         std.log.info("Couldn't load lua bytecode: {s}", .{lua.lua_tolstring(s, -1, null)});

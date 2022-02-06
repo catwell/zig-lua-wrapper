@@ -175,3 +175,16 @@ I'm sure there are other targets that work, but those are the ones
 I tested.
 
 All the source for this project is [On Github](https://github.com/ConnorRigby/zig-lua-wrapper)
+
+## luasocket example
+
+This demonstrates how to use complex external dependencies (with a C part and a Lua part).
+
+Instead of the step to compile the script, run `examples/luasocket/build.sh`.
+
+As of now it does not support Windows (because I do not have a machine to test it on).
+
+Also, note that you need the submodules for luasocket and luacc:
+
+    git submodule init
+    git submodule update
